@@ -26,11 +26,24 @@ tunavailable(){
     fi
 }
 
+# 增强的 SELinux 禁用函数
 disable_selinux(){
-if [ -s /etc/selinux/config ] && grep 'SELINUX=enforcing' /etc/selinux/config; then
-    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-    setenforce 0
-fi
+    # 临时禁用 SELinux（如果当前处于启用状态）
+    if command -v getenforce >/dev/null 2>&1; then
+        local sestatus=$(getenforce)
+        if [[ "$sestatus" != "Disabled" ]]; then
+            echo "检测到 SELinux 当前状态为: $sestatus，正在临时禁用..."
+            setenforce 0
+        fi
+    fi
+
+    # 修改配置文件，确保重启后永久禁用
+    if [ -s /etc/selinux/config ]; then
+        if grep -E '^SELINUX=(enforcing|permissive)' /etc/selinux/config >/dev/null 2>&1; then
+            echo "修改 /etc/selinux/config，将 SELINUX 设置为 disabled..."
+            sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
+        fi
+    fi
 }
 
 get_opsy(){

@@ -876,6 +876,7 @@ finally(){
 # ==================== 新增 TCP 加速功能 ====================
 run_tcp_accelerator(){
     local tcp_url="https://raw.githubusercontent.com/alickz/script/refs/heads/main/tcp.sh"
+    local tmp_script="/tmp/tcp_accel.sh"
 
     # 检查 curl 命令是否存在
     if ! command -v curl &>/dev/null; then
@@ -902,9 +903,22 @@ run_tcp_accelerator(){
     echo "2. 重启后再次运行此选项，选择「启用 BBRplus」即可完成加速。"
     echo "3. 如果您已经安装过内核，直接选择启用即可。"
     echo
-    echo "正在执行 TCP 加速脚本..."
+    echo "正在下载 TCP 加速脚本..."
     echo "------------------------------------------"
-    bash <(curl -s  "${tcp_url}")
+
+    # 下载脚本到临时文件
+    if curl -fsSL -o "${tmp_script}" "${tcp_url}"; then
+        echo "下载成功，开始执行..."
+        chmod +x "${tmp_script}"
+        bash "${tmp_script}"
+        rm -f "${tmp_script}"   # 执行完后删除临时文件
+    else
+        echo "下载 TCP 加速脚本失败，请检查网络或 URL。"
+        echo "按任意键返回主菜单..."
+        read -n 1
+        return
+    fi
+
     echo "------------------------------------------"
     echo "TCP 加速脚本执行完毕。"
     echo

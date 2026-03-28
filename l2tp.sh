@@ -891,7 +891,7 @@ run_tcp_accelerator(){
     echo
     echo "正在执行 TCP 加速脚本..."
     echo "------------------------------------------"
-    bash <(curl -s --no-check-certificate "${tcp_url}")
+    bash <(curl -s  "${tcp_url}")
     echo "------------------------------------------"
     echo "TCP 加速脚本执行完毕。"
     echo

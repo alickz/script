@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
@@ -139,7 +139,24 @@ install_l2tp(){
 
         echo "Adding the EPEL repository..."
         yum -y install epel-release yum-utils
-        [ ! -f /etc/yum.repos.d/epel.repo ] && echo "Install EPEL repository failed, please check it." && exit 1
+        
+        # 如果 epel.repo 文件仍不存在，手动创建（使用阿里云镜像）
+        if [ ! -f /etc/yum.repos.d/epel.repo ]; then
+            echo "epel.repo not found, creating manually..."
+            cat > /etc/yum.repos.d/epel.repo <<EOF
+[epel]
+name=Extra Packages for Enterprise Linux 7 - \$basearch
+baseurl=http://mirrors.aliyun.com/epel/7/\$basearch
+failovermethod=priority
+enabled=1
+gpgcheck=1
+gpgkey=http://mirrors.aliyun.com/epel/RPM-GPG-KEY-EPEL-7
+EOF
+            # 清理缓存并重新生成
+            yum clean all
+            yum makecache
+        fi
+        
         yum-config-manager --enable epel
         echo "Adding the EPEL repository complete..."
             yum -y install ppp libreswan xl2tpd  iptables-services iptables-devel pptpd

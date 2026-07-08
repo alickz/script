@@ -126,6 +126,11 @@ install_gost() {
     systemctl daemon-reload
     systemctl enable gost
 
+    # ========== 修改点：自动启动服务 ==========
+    info "正在启动 gost 服务..."
+    systemctl start gost
+    # ========================================
+
     info "安装完成！"
     echo ""
     info "当前配置："
@@ -133,8 +138,7 @@ install_gost() {
     echo "  用户名:   $(grep 'username:' "$CONFIG_FILE" | awk '{print $2}')"
     echo "  密码:     $(grep 'password:' "$CONFIG_FILE" | awk '{print $2}')"
     echo ""
-    info "运行以下命令启动服务："
-    echo "  sudo systemctl start gost"
+    info "服务已自动启动，并已设置开机自启"
 }
 
 # ---- 生成 YAML 配置文件 -------------------------------------------------------
@@ -379,7 +383,7 @@ show_help() {
 用法: $0 <命令> [参数]
 
 命令:
-  install                  安装 GOST (自动检测架构 + 配置 + 开机自启)
+  install                  安装 GOST (自动检测架构 + 配置 + 开机自启 + 自动启动)
   uninstall                卸载 GOST (停止服务 + 删除文件)
   modify [key] [value]     修改配置
   status                   查看安装状态和服务状态

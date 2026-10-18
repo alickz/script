@@ -150,7 +150,7 @@ write_config() {
     cat > "$CONFIG_FILE" << EOF
 services:
 - name: service-0
-  addr: :${port}
+  addr: 0.0.0.0:${port}
   handler:
     type: socks5
     auth:
